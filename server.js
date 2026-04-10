@@ -1,4 +1,5 @@
 const express = require('express');
+const Razorpay = require("razorpay");
 const mqtt = require('mqtt');
 const crypto = require('crypto');
 
@@ -11,6 +12,11 @@ const RAZORPAY_SECRET = process.env.RAZORPAY_SECRET;
 
 const MQTT_TOPIC = `${AIO_USERNAME}/feeds/upi-payment`;
 const PORT = process.env.PORT || 3000;
+
+const razorpay = new Razorpay({
+  key_id: process.env.KEY_ID,
+  key_secret: process.env.KEY_SECRET
+});
 
 // MQTT
 const client = mqtt.connect('mqtt://io.adafruit.com', {
@@ -61,4 +67,19 @@ app.get('/test/:amount', (req, res) => {
   console.log("Test Payment:", amount);
 
   res.send("Sent: " + amount);
+});
+app.get("/create-order/:amount", async (req, res) => {
+  try {
+    const amount = req.params.amount;
+
+    const order = await razorpay.orders.create({
+      amount: amount * 100, // convert to paise
+      currency: "INR"
+    });
+
+    res.json(order);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error creating order");
+  }
 });
