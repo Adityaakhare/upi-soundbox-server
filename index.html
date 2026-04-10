@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>UPI Soundbox</title>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+
+<body style="text-align:center; margin-top:100px;">
+  <h2>Pay ₹100</h2>
+  <button onclick="pay()">Pay Now</button>
+
+  <script>
+    async function pay() {
+      const res = await fetch('/create-order/100');
+      const order = await res.json();
+
+      const options = {
+        key: "YOUR_KEY_ID",   // 🔥 replace this
+        amount: order.amount,
+        currency: "INR",
+        order_id: order.id,
+
+        name: "UPI Soundbox",
+        description: "Test Payment",
+
+        handler: function (response) {
+          alert("Payment Successful ✅");
+        }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+    }
+  </script>
+</body>
+</html>
