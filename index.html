@@ -15,19 +15,28 @@
       const order = await res.json();
 
       const options = {
-        key: "YOUR_KEY_ID",   // 🔥 replace this
-        amount: order.amount,
-        currency: "INR",
-        order_id: order.id,
+  key: "rzp_test_SbktBF3BpS1Aiw",
+  amount: order.amount,
+  currency: "INR",
+  order_id: order.id,
 
-        name: "UPI Soundbox",
-        description: "Test Payment",
+  name: "UPI Soundbox",
+  description: "Test Payment",
 
-        handler: function (response) {
-          alert("Payment Successful ✅");
-        }
-      };
+  prefill: {
+    name: "Aditya",
+    email: "test@test.com",
+    contact: "9876543210"
+  },
 
+  theme: {
+    color: "#3399cc"
+  },
+
+  handler: function (response) {
+    alert("Payment Successful ✅");
+  }
+};
       const rzp = new Razorpay(options);
       rzp.open();
     }
