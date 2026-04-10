@@ -54,9 +54,8 @@ app.post('/webhook', (req, res) => {
   res.send("OK");
 });
 
-app.listen(PORT, () => console.log("Server running on port", PORT));
-app.get('/', (req, res) => {
-  res.send("Server is running 🚀");
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/index.html");
 });
 
 app.get('/test/:amount', (req, res) => {
@@ -82,7 +81,4 @@ app.get("/create-order/:amount", async (req, res) => {
     console.log(err);
     res.status(500).send("Error creating order");
   }
-});
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
 });
