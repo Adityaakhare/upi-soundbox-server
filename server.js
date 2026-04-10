@@ -2,10 +2,11 @@ const express = require('express');
 const Razorpay = require("razorpay");
 const mqtt = require('mqtt');
 const crypto = require('crypto');
+const path = require("path");
 
 const app = express();
 
-// 🔐 ENV VARIABLES (Railway will use these)
+// ENV VARIABLES
 const AIO_USERNAME = process.env.AIO_USERNAME;
 const AIO_KEY = process.env.AIO_KEY;
 const RAZORPAY_SECRET = process.env.RAZORPAY_SECRET;
@@ -13,6 +14,7 @@ const RAZORPAY_SECRET = process.env.RAZORPAY_SECRET;
 const MQTT_TOPIC = `${AIO_USERNAME}/feeds/upi-payment`;
 const PORT = process.env.PORT || 3000;
 
+// Razorpay
 const razorpay = new Razorpay({
   key_id: process.env.KEY_ID,
   key_secret: process.env.KEY_SECRET
@@ -28,7 +30,7 @@ client.on('connect', () => {
   console.log("MQTT Connected");
 });
 
-// Raw body
+// Webhook
 app.use('/webhook', express.raw({ type: 'application/json' }));
 
 app.post('/webhook', (req, res) => {
@@ -44,7 +46,6 @@ app.post('/webhook', (req, res) => {
   }
 
   const data = JSON.parse(req.body);
-
   const amount = data.payload.payment.entity.amount / 100;
 
   console.log("Payment:", amount);
@@ -54,14 +55,12 @@ app.post('/webhook', (req, res) => {
   res.send("OK");
 });
 
-app.get("/", (req, res) => {
-  const path = require("path");
-
+// Homepage (HTML)
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-
+// Test route
 app.get('/test/:amount', (req, res) => {
   const amount = req.params.amount;
 
@@ -71,12 +70,14 @@ app.get('/test/:amount', (req, res) => {
 
   res.send("Sent: " + amount);
 });
+
+// Create order
 app.get("/create-order/:amount", async (req, res) => {
   try {
     const amount = req.params.amount;
 
     const order = await razorpay.orders.create({
-      amount: amount * 100, // convert to paise
+      amount: amount * 100,
       currency: "INR"
     });
 
@@ -85,4 +86,9 @@ app.get("/create-order/:amount", async (req, res) => {
     console.log(err);
     res.status(500).send("Error creating order");
   }
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log("Server running on port", PORT);
 });
