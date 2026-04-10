@@ -55,8 +55,12 @@ app.post('/webhook', (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
+  const path = require("path");
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
 });
+
 
 app.get('/test/:amount', (req, res) => {
   const amount = req.params.amount;
