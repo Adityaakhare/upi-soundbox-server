@@ -83,3 +83,6 @@ app.get("/create-order/:amount", async (req, res) => {
     res.status(500).send("Error creating order");
   }
 });
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/index.html");
+});
